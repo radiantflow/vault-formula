@@ -4,9 +4,6 @@ vault:
   server: false
   service: false
 
-  enabled: true
-  hostname: example.com
-
   config:
     listener:
       - tcp:
@@ -28,7 +25,9 @@ vault:
 
   dev_mode: false
 
-  self_signed_cert: false
+  self_signed_cert:
+    enabled: true
+    hostname: example.com
 
   user: root
   group: root
