@@ -8,14 +8,11 @@ vault:
   config:
     listener:
       - tcp:
-        - address: 127.0.0.1:8200
+          address: 127.0.0.1:8200
           tls_disable: 1
           tls_cert_file: {}
           tls_key_file: {}
-    storage:
-    - consul:
-      - address: 127.0.0.1:8500
-        path: vault
+    storage: {}
 
     default_lease_ttl: 24h
     max_lease_ttl: 24h
