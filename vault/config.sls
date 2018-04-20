@@ -4,8 +4,8 @@
 vault-config-dir:
   file.directory:
     - name: /etc/vault/config.d
-    - user: vault
-    - group: vault
+    - user: {{ vault.user }}
+    - group: {{ vault.group }}
     - makedirs: true
 
 {%- if vault.self_signed_cert.enabled %}
@@ -38,10 +38,10 @@ vault-config:
     - watch_in:
        - service: vault
     {%- endif %}
-    - user: vault
-    - group: vault
+    - user: {{ vault.user }}
+    - group: {{ vault.user }}
     - require:
-      - user: vault
+      - user: {{ vault.user }}
     - contents: |
         {{ vault.config | json }}
 

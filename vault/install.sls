@@ -1,8 +1,20 @@
 {% from "vault/map.jinja" import vault with context %}
 
-vault-dep-unzip:
+vault-packages:
   pkg.installed:
-    - name: unzip
+    - names:
+      - unzip
+      - curl
+      {% if vault.secure_download %}
+      {% if grains['os'] == 'CentOS' or grains['os'] == 'Amazon' %}
+      - gnupg2
+      - perl-Digest-SHA
+      {% elif grains['os'] == 'Ubuntu' %}
+      - gnupg
+      - libdigest-sha-perl
+      {% endif %}
+      {% endif %}
+
 
 vault-bin-dir:
   file.directory:
@@ -23,14 +35,16 @@ vault-user:
       - group: {{ vault.group }}
 
 
+vault-download:
+  file.managed:
+    - name: /tmp/vault_{{ vault.version }}_linux_{{ vault.arch }}.zip
+    - source: https://{{ vault.download_host }}/vault/{{ vault.version }}/vault_{{ vault.version }}_linux_{{ vault.arch }}.zip
+    - source_hash: https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS
+    - unless: test -f /usr/local/bin/vault-{{ vault.version }}
+
 # Install vault
 
 {% if vault.secure_download %}
-vault-shasums:
-  cmd.run:
-    - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS -o /tmp/vault_{{ vault.version }}_SHA256SUMS
-    - creates: /tmp/vault_{{ vault.version }}_SHA256SUMS
-
 vault-sig:
   cmd.run:
     - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS.sig -o /tmp/vault_{{ vault.version }}_SHA256SUMS.sig
@@ -47,32 +61,17 @@ vault-key-import:
     - name: gpg --import /tmp/hashicorp.asc
     - unless: gpg --list-keys {{ vault.hashicorp_key_id }}
     - requires:
-      - file: /tmp/hashicorp.asc
-      - cmd: vault packages
+      - file: vault-key-download
+      - cmd: vault-packages
 
 vault-sig-verify:
   cmd.run:
     - name: gpg --verify /tmp/vault_{{ vault.version }}_SHA256SUMS.sig /tmp/vault_{{ vault.version }}_SHA256SUMS
     - require:
-      - cmd: download shasums
-      - cmd: import key
+      - file: vault-download
+      - cmd: vault-key-import
 
-vault-shasums-verify:
-  cmd.run:
-    - name: "shasum -a 256 -c vault_{{ vault.version }}_SHA256SUMS 2>&1 | grep -q \"vault_{{ vault.version }}_linux_{{ vault.arch }}.zip: OK\""
-    - cwd: /tmp
-    - require:
-      - cmd: download vault
-      - cmd: verify shasums sig
 {% endif %}
-
-
-vault-download:
-  file.managed:
-    - name: /tmp/vault_{{ vault.version }}_linux_{{ vault.arch }}.zip
-    - source: https://{{ vault.download_host }}/vault/{{ vault.version }}/vault_{{ vault.version }}_linux_{{ vault.arch }}.zip
-    - source_hash: https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS
-    - unless: test -f /usr/local/bin/vault-{{ vault.version }}
 
 vault-extract:
   cmd.wait:
