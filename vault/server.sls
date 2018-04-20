@@ -43,7 +43,7 @@ generate self signed SSL certs:
 {%- if vault.service.type == 'systemd' %}
 /etc/systemd/system/vault.service:
   file.managed:
-    - source: salt://vault/files/vault_systemd.service.jinja
+    - source: salt://vault/files/vault.service.jinja
     - template: jinja
     - user: root
     - group: root
@@ -54,7 +54,7 @@ generate self signed SSL certs:
 {% elif vault.service.type == 'upstart' %}
 /etc/init/vault.conf:
   file.managed:
-    - source: salt://vault/files/vault_upstart.conf.jinja
+    - source: salt://vault/files/vault.upstart.jinja
     - template: jinja
     - user: root
     - group: root
