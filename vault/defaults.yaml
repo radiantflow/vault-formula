@@ -24,6 +24,8 @@ vault:
 
   user: root
   group: root
+
+  secure_download: true
   hashicorp_gpg_key: |
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     Version: GnuPG v1
