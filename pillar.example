@@ -1,22 +1,39 @@
 vault:
-  version: 0.7.0
-  listen_protocol: tcp
-  listen_port: 8200
-  listen_address: 0.0.0.0
-  tls_disable: 0
-  tls_cert_file: {}
-  tls_key_file: {}
-  default_lease_ttl: 4380h
-  max_lease_ttl: 43800h
-  self_signed_cert:
-    enabled: false
-  backend: {}
-  dev_mode: true
-  secure_download: true
-  service:
-    type: upstart
+  version: 0.10.0
+
+  server: false
+  service: false
+
+  enabled: true
+  hostname: example.com
+
+  config:
+    listener:
+      - tcp:
+        - address: 127.0.0.1:8200
+          tls_disable: 1
+          tls_cert_file: {}
+          tls_key_file: {}
+    storage:
+    - consul:
+      - address: 127.0.0.1:8500
+        path: vault
+    telemetry:
+      - disable_hostname: true
+        statsite_address: 127.0.0.1:8125
+
+    cluster_name: vault-cluster
+    default_lease_ttl: 24h
+    max_lease_ttl: 24h
+
+  dev_mode: false
+
+  self_signed_cert: false
+
   user: root
   group: root
+
+  hashicorp_key_id: 51852D87348FFC4C
   hashicorp_gpg_key: |
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     Version: GnuPG v1
@@ -48,4 +65,3 @@ vault:
     oEIgXTMyCILo34Fa/C6VCm2WBgz9zZO8/rHIiQm1J5zqz0DrDwKBUM9C
     =LYpS
     -----END PGP PUBLIC KEY BLOCK-----
-  hashicorp_key_id: 51852D87348FFC4C

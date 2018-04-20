@@ -1,21 +1,30 @@
 vault:
-  version: 0.9.1
-  listen_protocol: tcp
-  listen_port: 8200
-  listen_address: 0.0.0.0
-  tls_disable: 0
-  service: upstart
-  tls_cert_file: {}
-  tls_key_file: {}
-  default_lease_ttl: 24h
-  max_lease_ttl: 24h
+  version: 0.10.0
+  download_host: releases.hashicorp.com
+
+  server: false
+  service: false
+
+  config:
+    listener:
+      - tcp:
+        - address: 127.0.0.1:8200
+          tls_disable: 1
+          tls_cert_file: {}
+          tls_key_file: {}
+    storage:
+    - consul:
+      - address: 127.0.0.1:8500
+        path: vault
+
+    default_lease_ttl: 24h
+    max_lease_ttl: 24h
+
   self_signed_cert:
     enabled: false
-  backend: {}
-  dev_mode: true
-  secure_download: true
-  service:
-    type: systemd
+
+  dev_mode: false
+
   user: root
   group: root
   hashicorp_gpg_key: |
