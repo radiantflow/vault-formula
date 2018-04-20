@@ -1,2 +1,19 @@
 {% import_yaml "vault/defaults.yaml" as defaults %}
-{% set vault = salt['pillar.get']('vault', default=defaults['vault'], merge=True) %}
+
+{% set vault = salt['pillar.get']('vault', default=defaults.vault, merge=True) %}
+
+{## Add any overrides based on CPU architecture. ##}
+{% set vault = salt['grains.filter_by']({
+        'armv6l': {
+            "arch": 'arm'
+        },
+        'armv7l': {
+            "arch": 'arm'
+        },
+        'x86_64': {
+            "arch": 'amd64'
+        }
+  }
+  ,grain="cpuarch"
+  ,merge=vault)
+%}
