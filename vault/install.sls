@@ -45,7 +45,12 @@ vault-download:
 # Install vault
 
 {% if vault.secure_download %}
-vault-sig:
+vault-shasums:
+  cmd.run:
+    - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS -o /tmp/vault_{{ vault.version }}_SHA256SUMS
+    - creates: /tmp/vault_{{ vault.version }}_SHA256SUMS
+
+vault-shasig:
   cmd.run:
     - name: curl --silent -L https://releases.hashicorp.com/vault/{{ vault.version }}/vault_{{ vault.version }}_SHA256SUMS.sig -o /tmp/vault_{{ vault.version }}_SHA256SUMS.sig
     - creates: /tmp/vault_{{ vault.version }}_SHA256SUMS.sig
@@ -64,10 +69,12 @@ vault-key-import:
       - file: vault-key-download
       - cmd: vault-packages
 
-vault-sig-verify:
+vault-shasig-verify:
   cmd.run:
     - name: gpg --verify /tmp/vault_{{ vault.version }}_SHA256SUMS.sig /tmp/vault_{{ vault.version }}_SHA256SUMS
     - require:
+      - cmd: vault-shasums
+      - cmd: vault-shasig
       - file: vault-download
       - cmd: vault-key-import
 
