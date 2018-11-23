@@ -1,5 +1,5 @@
 vault:
-  version: 0.10.0
+  version: 0.11.4
   download_host: releases.hashicorp.com
 
   server: false
