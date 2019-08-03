@@ -1,5 +1,5 @@
 vault:
-  version: 0.11.4
+  version: 1.2.0
   download_host: releases.hashicorp.com
 
   server: false
@@ -14,8 +14,9 @@ vault:
           tls_key_file: {}
     storage: {}
 
-    default_lease_ttl: 24h
-    max_lease_ttl: 24h
+    ui: true
+    default_lease_ttl: 768h
+    max_lease_ttl: 768h
 
   self_signed_cert:
     enabled: false
