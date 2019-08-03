@@ -10,3 +10,6 @@ Restart=on-failure
 ExecStart=/usr/local/bin/vault server {% if vault.dev_mode %}-dev{% else %} -config="/etc/vault/config.d/config.json"{% endif %}
 User={{ vault.user }}
 Group={{ vault.group }}
+LimitMEMLOCK=infinity
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
